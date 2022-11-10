@@ -1,4 +1,4 @@
-import { getTMDBMovies } from "../services/themoviedb.service.js";
+import { getTMDBMovies } from "../utils/themoviedb.js";
 import { Request, Response } from "express";
 
 async function listMovies(req: Request, res: Response) {

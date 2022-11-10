@@ -2,6 +2,7 @@ import {
   getUserWatchlist,
   insertMovieOnWatchlist,
   isOnWatchlist,
+  removeMovieFromList,
 } from "../repositories/watchlist.repository.js";
 import { Request, Response } from "express";
 import {
@@ -10,7 +11,7 @@ import {
   okResponse,
   serverErrorResponse,
 } from "./controller.helper.js";
-import { getMovieData } from "../services/themoviedb.service.js";
+import { getMovieData } from "../utils/themoviedb.js";
 
 async function listMoviesWatchlist(req: Request, res: Response) {
   const { user_id } = req.params;
@@ -36,16 +37,16 @@ async function listMoviesWatchlist(req: Request, res: Response) {
 
 async function addMovieToList(req: Request, res: Response) {
   const { user_id } = req.body;
-  
+
   const TMDB_movie_id: string = req.body.movie_id;
 
   try {
     const movie = (await isOnWatchlist(TMDB_movie_id, user_id)).rows;
-    if (movie.length > 0) return okResponse(res, 'Already on the list');
+    if (movie.length > 0) return okResponse(res, "Already on the list");
 
     const movieData = await getMovieData(TMDB_movie_id);
     if (!movieData) return notFoundRequestResponse(res);
-    
+
     const { title, poster_path, overview, release_date } = movieData.data;
     insertMovieOnWatchlist(
       TMDB_movie_id,
@@ -55,10 +56,24 @@ async function addMovieToList(req: Request, res: Response) {
       release_date,
       user_id
     );
-    okResponse(res)
+    okResponse(res);
   } catch (error) {
-    serverErrorResponse(res, error.message)
+    serverErrorResponse(res, error.message);
   }
 }
 
-export { listMoviesWatchlist, addMovieToList };
+async function removeFromList(req: Request, res: Response) {
+  const { user_id } = res.locals;
+  const TMDB_movie_id = req.params.movie_id;
+  try {
+    const movie = await isOnWatchlist(TMDB_movie_id, user_id);
+    if (!movie) return notFoundRequestResponse(res);
+
+    removeMovieFromList(TMDB_movie_id, user_id);
+    okResponse(res);
+  } catch (error) {
+    serverErrorResponse(res, error.message);
+  }
+}
+
+export { listMoviesWatchlist, addMovieToList, removeFromList };
