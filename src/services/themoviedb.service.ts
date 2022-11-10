@@ -11,4 +11,8 @@ async function getTMDBMovies(page: number = 1, language: string = "en-US") {
   );
 }
 
-export { getTMDBMovies };
+async function getMovieData (movie_id: number | string, language: string = "en-US"){
+  return axios.get(`https://api.themoviedb.org/3/movie/${movie_id}?api_key=${API_KEY}&language=${language}`)
+}
+
+export { getTMDBMovies, getMovieData};
