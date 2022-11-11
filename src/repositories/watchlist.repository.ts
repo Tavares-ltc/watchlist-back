@@ -41,10 +41,14 @@ async function removeMovieFromList(
     [user_id, TMDB_movie_id]
   );
 }
+async function getWatchlistDataById(watchlist_id: number | string){
+return connection.query(`SELECT * FROM watchlist WHERE id = $1;`, [watchlist_id]);
+}
 
 export {
   getUserWatchlist,
   isOnWatchlist,
   insertMovieOnWatchlist,
   removeMovieFromList,
+  getWatchlistDataById
 };

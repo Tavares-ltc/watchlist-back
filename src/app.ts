@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import tmdb_routes from "./routes/tmdb.routes.js";
 import user_routes from "./routes/auth.routes.js";
 import watchlist_routes from "./routes/watchlist.routes.js";
+import rating_routes from "./routes/ratings.routes.js";
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -14,6 +16,7 @@ const PORT = process.env.PORT;
 app.use(tmdb_routes);
 app.use(user_routes);
 app.use(watchlist_routes);
+app.use(rating_routes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
