@@ -37,8 +37,8 @@ async function removeMovieFromList(
   user_id: number | string
 ) {
   return connection.query(
-    `DELETE FROM watchlist WHERE  WHERE user_id = $1 AND "TMDB_movie_id" = $2;`,
-    [TMDB_movie_id, user_id]
+    `DELETE FROM watchlist WHERE user_id = $1 AND "TMDB_movie_id" = $2;`,
+    [user_id, TMDB_movie_id]
   );
 }
 

@@ -41,7 +41,7 @@ const STATUS_CODE = Object.freeze({
     return res.status(STATUS_CODE.OK).send(text);
   }
   
-  function serverErrorResponse(res: Response, error: string, text = STATUS_TEXT.SERVER_ERROR) {
+  function serverErrorResponse(res: Response, error?: string, text = STATUS_TEXT.SERVER_ERROR) {
     console.error(error);
     return res.status(STATUS_CODE.SERVER_ERROR).send(text);
   }

@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import tmdb_routes from "./routes/tmdb.routes.js";
-import user_routes from "./routes/user.routes.js";
+import user_routes from "./routes/auth.routes.js";
 import watchlist_routes from "./routes/watchlist.routes.js";
 const app = express();
 app.use(express.json());

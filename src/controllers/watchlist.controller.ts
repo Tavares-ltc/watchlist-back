@@ -36,7 +36,8 @@ async function listMoviesWatchlist(req: Request, res: Response) {
 }
 
 async function addMovieToList(req: Request, res: Response) {
-  const { user_id } = req.body;
+  const { user_id } = res.locals;
+ 
 
   const TMDB_movie_id: string = req.body.movie_id;
 
