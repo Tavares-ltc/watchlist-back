@@ -21,22 +21,49 @@ async function deleteRatingByWathlistId(watchlist_id: number | string) {
 }
 
 async function updateRating(
-  watchlist_id: number | string,
+  rating_id: number | string,
   stars: number | string
 ) {
-  return connection.query(
-    `UPDATE rating SET stars = $1 WHERE watchlist_id  = $2;`,
-    [stars, watchlist_id]
-  );
+  return connection.query(`UPDATE rating SET stars = $1 WHERE id  = $2;`, [
+    stars,
+    rating_id,
+  ]);
 }
-async function updateComment(
-  watchlist_id: number | string,
-  comment: string
-) {
+async function updateComment(rating_id: number | string, comment: string) {
+  return connection.query(`UPDATE rating SETcomment = $1 WHERE id  = $2;`, [
+    comment,
+    rating_id,
+  ]);
+}
+
+async function getRatingById(rating_id: number | string) {
   return connection.query(
-    `UPDATE rating SETcomment = $1 WHERE watchlist_id  = $2;`,
-    [comment, watchlist_id]
+    `SELECT rating.*, watchlist.user_id FROM rating JOIN watchlist ON watchlist.id = rating.movie_id WHERE rating.id = $1;`,
+    [rating_id]
   );
 }
 
-export { insertRating, deleteRatingById, deleteRatingByWathlistId, updateRating, updateComment };
+async function getRatingByWatchlistId(watchlist_id: number | string) {
+  return connection.query(
+    `SELECT rating.*, watchlist.user_id FROM rating JOIN watchlist ON watchlist.id = rating.movie_id WHERE movie_id = $1;`,
+    [watchlist_id]
+  );
+}
+
+async function getUserRatingsStatistics(user_id: number | string) {
+  return connection.query(
+    `SELECT COUNT(rating.id), stars FROM rating JOIN watchlist ON movie_id = watchlist.id WHERE user_id = $1 GROUP BY stars;`,
+    [user_id]
+  );
+}
+
+export {
+  insertRating,
+  deleteRatingById,
+  deleteRatingByWathlistId,
+  updateRating,
+  updateComment,
+  getRatingById,
+  getRatingByWatchlistId,
+  getUserRatingsStatistics
+};

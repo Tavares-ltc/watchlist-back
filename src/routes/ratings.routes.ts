@@ -1,9 +1,13 @@
 import {Router} from "express";
-import { rateMovie } from "../controllers/ratings.controller.js";
+import { editComment, editRating, listRatingStatistics, rateMovie, removeRating } from "../controllers/ratings.controller.js";
 import checkAuthorization from "../middlewares/auth.middleware.js";
 
 const route = Router();
 
-route.post("/rate", checkAuthorization, rateMovie);
+route.post("/rating", checkAuthorization, rateMovie);
+route.delete("/rating", checkAuthorization, removeRating);
+route.patch("/rating", checkAuthorization, editRating);
+route.patch("/comment", checkAuthorization, editComment);
+route.get('/rating/statistics', checkAuthorization, listRatingStatistics)
 
 export default route;

@@ -1,4 +1,5 @@
 import {
+  get5starsMovies,
   getUserWatchlist,
   insertMovieOnWatchlist,
   isOnWatchlist,
@@ -10,8 +11,10 @@ import {
   notFoundRequestResponse,
   okResponse,
   serverErrorResponse,
+  unprocessableRequestResponse,
 } from "./controller.helper.js";
 import { getMovieData } from "../utils/themoviedb.js";
+import { deleteRatingByWathlistId } from "../repositories/ratings.repository.js";
 
 async function listMoviesWatchlist(req: Request, res: Response) {
   const { user_id } = req.params;
@@ -69,7 +72,7 @@ async function removeFromList(req: Request, res: Response) {
   try {
     const movie = await isOnWatchlist(TMDB_movie_id, user_id);
     if (!movie) return notFoundRequestResponse(res);
-
+    deleteRatingByWathlistId(movie.rows[0].id)
     removeMovieFromList(TMDB_movie_id, user_id);
     okResponse(res);
   } catch (error) {
@@ -77,4 +80,18 @@ async function removeFromList(req: Request, res: Response) {
   }
 }
 
-export { listMoviesWatchlist, addMovieToList, removeFromList };
+async function listFavoritesMovies(req: Request, res: Response){
+  const {user_id} = req.params;
+  if(!user_id){
+    return unprocessableRequestResponse(res);
+  }
+  try {
+    const favoriteMovies = (await get5starsMovies(user_id)).rows
+    if(!favoriteMovies) okResponse(res, []);
+    okResponse(res, favoriteMovies)
+  } catch (error) {
+    notFoundRequestResponse(res)
+  }
+}
+
+export { listMoviesWatchlist, addMovieToList, removeFromList, listFavoritesMovies };
