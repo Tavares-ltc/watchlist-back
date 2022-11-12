@@ -14,11 +14,17 @@ import {
   serverErrorResponse,
   unauthorizedRequestResponse,
 } from "./controller.helper.js";
-
+import {signup_schema, signin_schema} from "../schemas/auth.schema.js"
+import { validateDataBySchema } from "../middlewares/validate_schema.middleware.js";
 dotenv.config();
 
 async function signup(req: Request, res: Response) {
+  const errors: string[] | false = validateDataBySchema(req.body, signup_schema);
+ if(errors) return unauthorizedRequestResponse(res, errors)
+
+
   const { name, email, password, image } = req.body;
+  
   const encryptedPassword = bcrypt.hashSync(password, 10);
   try {
     const emailExists = await getUserByEmail(email);
@@ -34,6 +40,9 @@ async function signup(req: Request, res: Response) {
 }
 
 async function signin(req: Request, res: Response) {
+  const errors: string[] | false = validateDataBySchema(req.body, signin_schema);
+  if(errors) return unauthorizedRequestResponse(res, errors)
+
   const { password, email } = req.body;
 
   try {

@@ -17,7 +17,7 @@ async function sessionUpsert(user_id: number | string, token: string){
 }
 
 async function getUserSessionToken(user_id: number | string){
-    return connection.query('SELECT token FROM sessions WHERE "user_id"=$1;', [user_id])
+    return connection.query('SELECT token FROM sessions WHERE "user_id" = $1 ORDER BY id DESC;' , [user_id])
 }
 
 export {

@@ -11,10 +11,13 @@ import {
   notFoundRequestResponse,
   okResponse,
   serverErrorResponse,
+  unauthorizedRequestResponse,
   unprocessableRequestResponse,
 } from "./controller.helper.js";
 import { getMovieData } from "../utils/themoviedb.js";
 import { deleteRatingByWathlistId } from "../repositories/ratings.repository.js";
+import { validateDataBySchema } from "../middlewares/validate_schema.middleware.js";
+import { movie_schema } from "../schemas/watchlist.schema.js";
 
 async function listMoviesWatchlist(req: Request, res: Response) {
   const { user_id } = req.params;
@@ -39,7 +42,11 @@ async function listMoviesWatchlist(req: Request, res: Response) {
 }
 
 async function addMovieToList(req: Request, res: Response) {
+  const errors: string[] | false = validateDataBySchema(req.body, movie_schema);
+  if(errors) return unauthorizedRequestResponse(res, errors)
+  
   const { user_id } = res.locals;
+  const noPosterImage = "https://www.sda.pf/wp-content/themes/dt-the7/images/noimage.jpg"
  
 
   const TMDB_movie_id: string = req.body.movie_id;
@@ -47,12 +54,13 @@ async function addMovieToList(req: Request, res: Response) {
   try {
     const movie = (await isOnWatchlist(TMDB_movie_id, user_id)).rows;
     if (movie.length > 0) return okResponse(res, "Already on the list");
-
     const movieData = await getMovieData(TMDB_movie_id);
     if (!movieData) return notFoundRequestResponse(res);
 
-    const { title, poster_path, overview, release_date } = movieData.data;
-    insertMovieOnWatchlist(
+    const { title, overview, release_date } = movieData.data;
+    let {poster_path} = movieData.data;
+    if(!poster_path) poster_path = noPosterImage
+    await insertMovieOnWatchlist(
       TMDB_movie_id,
       title,
       poster_path,

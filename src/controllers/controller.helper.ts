@@ -46,7 +46,7 @@ const STATUS_CODE = Object.freeze({
     return res.status(STATUS_CODE.SERVER_ERROR).send(text);
   }
 
-  function unauthorizedRequestResponse(res: Response, text = STATUS_TEXT.UNAUTHORIZED) {
+  function unauthorizedRequestResponse(res: Response, text: string | string[] = STATUS_TEXT.UNAUTHORIZED) {
     return res.status(STATUS_CODE.UNAUTHORIZED).send(text);
   }
 

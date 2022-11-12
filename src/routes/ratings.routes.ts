@@ -5,7 +5,7 @@ import checkAuthorization from "../middlewares/auth.middleware.js";
 const route = Router();
 
 route.post("/rating", checkAuthorization, rateMovie);
-route.delete("/rating", checkAuthorization, removeRating);
+route.delete("/rating/:rating_id", checkAuthorization, removeRating);
 route.patch("/rating", checkAuthorization, editRating);
 route.patch("/comment", checkAuthorization, editComment);
 route.get('/rating/statistics', checkAuthorization, listRatingStatistics)

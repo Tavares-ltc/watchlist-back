@@ -10,5 +10,4 @@ route.get("/watchlist/favorites/:user_id", listFavoritesMovies)
 route.post("/watchlist",checkAuthorization, addMovieToList)
 route.delete("/watchlist/:movie_id",checkAuthorization, removeFromList)
 
-
 export default route

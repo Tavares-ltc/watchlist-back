@@ -27,7 +27,7 @@ async function insertMovieOnWatchlist(
   user_id: number | string
 ) {
   return connection.query(
-    `INSERT INTO watchlist ("TMDB_movie_id", title, poster_path, overview,release_date,user_id)
+    `INSERT INTO watchlist ("TMDB_movie_id", title, poster_path, overview, release_date, user_id)
      VALUES ($1,$2,$3,$4,$5, $6);`,
     [TMDB_movie_id, title, poster_path, overview, release_date, user_id]
   );
@@ -41,12 +41,18 @@ async function removeMovieFromList(
     [user_id, TMDB_movie_id]
   );
 }
-async function getWatchlistDataById(watchlist_id: number | string){
-return connection.query(`SELECT * FROM watchlist WHERE id = $1;`, [watchlist_id]);
+async function getWatchlistDataById(watchlist_id: number | string) {
+  return connection.query(`SELECT * FROM watchlist WHERE id = $1;`, [
+    watchlist_id,
+  ]);
 }
 
-async function get5starsMovies(user_id: number | string){
-return connection.query(`SELECT watachlist.* FROM watchlist JOIN rating ON watchlist.id = rating.movie_id WHERE rating.user_id  = $1;`[user_id])
+async function get5starsMovies(user_id: number | string) {
+  return connection.query(
+    `SELECT watchlist.* FROM watchlist JOIN rating ON watchlist.id = rating.watchlist_id WHERE user_id = $1 AND stars = 5;`,[
+      user_id
+    ]
+  );
 }
 
 export {
@@ -55,5 +61,5 @@ export {
   insertMovieOnWatchlist,
   removeMovieFromList,
   getWatchlistDataById,
-  get5starsMovies
+  get5starsMovies,
 };
