@@ -152,7 +152,7 @@ CODE: 200 OK
 
 - POST /watchlist
   
-  ```
+```
 Requires:
 {
 "movie_id": "TMDB movie id"
