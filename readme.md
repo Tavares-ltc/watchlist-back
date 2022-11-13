@@ -1,4 +1,6 @@
 
+# ABOUT
+
 The main idea behind the app is create a watchlist of movies, being able to mark the movie as watched and give a personal review about the movie with a simple 0 to 5 stars rating and a optional comment. In the end, the user will have a list of movies he wanna see, movies he saw and if he likes or not. With the user Id is also possible see another person movies watchlist, what will favor talks about seen movies and dates to see other.
 
 
@@ -23,7 +25,7 @@ The main idea behind the app is create a watchlist of movies, being able to mark
 
 # REQUISITIONS
 
-- SIGNUP
+- AUTH ROUTES
 
 POST /signup
 Requires:
@@ -35,7 +37,9 @@ Requires:
 }
 If all goes well, will return with code: 201 CREATED
 
-- SIGNIN
+
+
+
 
 POST /signin
 Requires:
@@ -48,7 +52,12 @@ If all goes well, will return with:
 {"token": "Here will be the user session token"}
 CODE: 200 OK
 
+
+
+
+
 - LIST MOVIES (TMDB ROUTE)
+
 
 GET /movies
 
@@ -86,6 +95,12 @@ If all goes well, will return like:
 CODE: 200 OK
 
 
+
+
+
+- WATCHLIST ROUTES
+
+
 GET /watchlist/:user_id
 
 If all goes well, will return like:
@@ -107,10 +122,14 @@ CODE: 200 OK
 
 
 
+
+
 GET /watchlist/favorites/:user_id
 
 If all goes well, will return only users 5 stars movies on the same format as "GET /watchlist/:user_id".
 CODE: 200 OK
+
+
 
 
 
@@ -127,6 +146,8 @@ If all goes well, will return with code: 201 CREATED
 
 
 
+
+
 DELETE /watchlist/:movie_id
 
 Requires:
@@ -139,6 +160,11 @@ Requires:
 
 If all goes well, will return with code: 200 OK
 
+
+
+
+
+- RATING ROUTES
 
 
 POST /rating
@@ -157,6 +183,8 @@ If all goes well, will return with code: 201 CREATED
 
 
 
+
+
 DELETE /rating/:rating_id
 
 Requires:
@@ -165,6 +193,9 @@ Requires:
 }
 
 If all goes well, will return with code: 200 OK
+
+
+
 
 
 PATCH /rating
@@ -178,6 +209,11 @@ Requires:
  headers: {"authorization": "Bearer token you recived"}
 }
 If all goes well, will return with code: 200 OK
+
+
+
+
+
 
 PATCH /comment
 
