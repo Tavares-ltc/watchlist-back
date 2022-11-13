@@ -28,6 +28,8 @@ The main idea behind the app is create a watchlist of movies, being able to mark
 ## AUTH ROUTES
 
 - POST /signup
+
+```
 Requires:
 {
 "name": "user name",
@@ -35,22 +37,29 @@ Requires:
 "password": "user password",
 "image": "profile image"
 }
-If all goes well, will return with code: 201 CREATED
+```  
+
+If all goes well, will return with code: 201 CREATED  
 
 
 
 
 
 - POST /signin
+  
+```
 Requires:
 {
 "emial": "user email",
 "password": "user password"
 }
+```  
+
 If all goes well, will return with:
 
 {"token": "Here will be the user session token"}
-CODE: 200 OK
+CODE: 200 OK  
+
 
 
 
@@ -61,13 +70,15 @@ CODE: 200 OK
 
 - GET /movies
 
-Two query parameters can be passed:
+Two query parameters can be passed:  
 
-/movies?page=2
-/movies?language=pt-BR
+
+> /movies?page=2
+> /movies?language=pt-BR  
+
 
 If all goes well, will return like:
-
+```
 "page": 1,
 "results": [
 {
@@ -92,7 +103,9 @@ If all goes well, will return like:
 ...
 ]
 }
-CODE: 200 OK
+```  
+
+CODE: 200 OK  
 
 
 
@@ -104,7 +117,7 @@ CODE: 200 OK
 - GET /watchlist/:user_id
 
 If all goes well, will return like:
-
+```
 [
   {
 "id": 2,
@@ -118,7 +131,10 @@ If all goes well, will return like:
   }
 ...
 ]
-CODE: 200 OK
+```  
+
+CODE: 200 OK  
+
 
 
 
@@ -126,7 +142,8 @@ CODE: 200 OK
 
 - GET /watchlist/favorites/:user_id
 
-If all goes well, will return only users 5 stars movies on the same format as "GET /watchlist/:user_id".
+If all goes well, will return only users 5 stars movies on the same format as   
+"GET /watchlist/:user_id".
 CODE: 200 OK
 
 
@@ -134,6 +151,8 @@ CODE: 200 OK
 
 
 - POST /watchlist
+  
+  ```
 Requires:
 {
 "movie_id": "TMDB movie id"
@@ -141,8 +160,9 @@ Requires:
 {
  headers: {"authorization": "Bearer token you recived"}
 }
+```  
 
-If all goes well, will return with code: 201 CREATED
+If all goes well, will return with code: 201 CREATED  
 
 
 
@@ -150,6 +170,7 @@ If all goes well, will return with code: 201 CREATED
 
 - DELETE /watchlist/:movie_id
 
+```
 Requires:
 {
 "movie_id": "TMDB movie id"
@@ -157,8 +178,9 @@ Requires:
 {
  headers: {"authorization": "Bearer token you recived"}
 }
+```  
 
-If all goes well, will return with code: 200 OK
+If all goes well, will return with code: 200 OK  
 
 
 
@@ -169,6 +191,7 @@ If all goes well, will return with code: 200 OK
 
 - POST /rating
 
+```
 Requires:
 {
   "watchlist_id":"id of movie on user watchlist",
@@ -178,8 +201,10 @@ Requires:
 {
  headers: {"authorization": "Bearer token you recived"}
 }
+```  
 
-If all goes well, will return with code: 201 CREATED
+If all goes well, will return with code: 201 CREATED  
+
 
 
 
@@ -191,15 +216,18 @@ Requires:
 {
  headers: {"authorization": "Bearer token you recived"}
 }
+```  
 
-If all goes well, will return with code: 200 OK
-
-
-
+If all goes well, will return with code: 200 OK  
 
 
-- PATCH /rating
 
+
+
+
+- PATCH /rating  
+  
+```
 Requires:
 {
   "rating_id":""
@@ -208,7 +236,10 @@ Requires:
 {
  headers: {"authorization": "Bearer token you recived"}
 }
-If all goes well, will return with code: 200 OK
+```  
+
+If all goes well, will return with code: 200 OK  
+
 
 
 
@@ -216,7 +247,7 @@ If all goes well, will return with code: 200 OK
 
 
 - PATCH /comment
-
+```
 Requires:
 {
   "rating_id":""
@@ -225,10 +256,13 @@ Requires:
 {
  headers: {"authorization": "Bearer token you recived"}
 }
-If all goes well, will return with code: 200 OK
+```  
+
+If all goes well, will return with code: 200 OK  
+
 
 GET /rating/statistics
-
+```
 If all goes well, will return like:
 [
   {
@@ -237,5 +271,8 @@ If all goes well, will return like:
   }
   ...
 ]
-CODE:200
+```  
+
+CODE:200  
+
 
