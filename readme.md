@@ -25,9 +25,9 @@ The main idea behind the app is create a watchlist of movies, being able to mark
 
 # REQUISITIONS
 
-- AUTH ROUTES
+## AUTH ROUTES
 
-POST /signup
+- POST /signup
 Requires:
 {
 "name": "user name",
@@ -41,7 +41,7 @@ If all goes well, will return with code: 201 CREATED
 
 
 
-POST /signin
+- POST /signin
 Requires:
 {
 "emial": "user email",
@@ -56,10 +56,10 @@ CODE: 200 OK
 
 
 
-- LIST MOVIES (TMDB ROUTE)
+## LIST MOVIES (TMDB ROUTE)
 
 
-GET /movies
+- GET /movies
 
 Two query parameters can be passed:
 
@@ -98,10 +98,10 @@ CODE: 200 OK
 
 
 
-- WATCHLIST ROUTES
+## WATCHLIST ROUTES
 
 
-GET /watchlist/:user_id
+- GET /watchlist/:user_id
 
 If all goes well, will return like:
 
@@ -124,7 +124,7 @@ CODE: 200 OK
 
 
 
-GET /watchlist/favorites/:user_id
+- GET /watchlist/favorites/:user_id
 
 If all goes well, will return only users 5 stars movies on the same format as "GET /watchlist/:user_id".
 CODE: 200 OK
@@ -133,7 +133,7 @@ CODE: 200 OK
 
 
 
-POST /watchlist
+- POST /watchlist
 Requires:
 {
 "movie_id": "TMDB movie id"
@@ -148,7 +148,7 @@ If all goes well, will return with code: 201 CREATED
 
 
 
-DELETE /watchlist/:movie_id
+- DELETE /watchlist/:movie_id
 
 Requires:
 {
@@ -164,10 +164,10 @@ If all goes well, will return with code: 200 OK
 
 
 
-- RATING ROUTES
+## RATING ROUTES
 
 
-POST /rating
+- POST /rating
 
 Requires:
 {
@@ -185,7 +185,7 @@ If all goes well, will return with code: 201 CREATED
 
 
 
-DELETE /rating/:rating_id
+- DELETE /rating/:rating_id
 
 Requires:
 {
@@ -198,7 +198,7 @@ If all goes well, will return with code: 200 OK
 
 
 
-PATCH /rating
+- PATCH /rating
 
 Requires:
 {
@@ -215,7 +215,7 @@ If all goes well, will return with code: 200 OK
 
 
 
-PATCH /comment
+- PATCH /comment
 
 Requires:
 {
