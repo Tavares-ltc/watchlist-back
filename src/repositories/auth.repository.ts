@@ -1,28 +1,42 @@
-import connection from "../database/postgres.js";
+import { prisma } from "../config/database.js";
 
 async function getUserByEmail(email: string) {
-    return connection.query("SELECT * FROM users WHERE email = $1;", [email]);
+    return prisma.users.findFirst({
+        where: { email },
+        orderBy: { id: "desc" },
+    });
 }
 
-async function createUser(name: string, email: string, encryptedPassword: string, image: string){
-    return connection.query(
-        "INSERT INTO users (name, email, password, image) VALUES ($1, $2, $3, $4);",
-        [name, email, encryptedPassword, image]
-    );
+async function createUser(
+    name: string,
+    email: string,
+    encryptedPassword: string,
+    image: string
+) {
+    return prisma.users.create({
+        data: {
+            name,
+            email,
+            password: encryptedPassword,
+            image,
+        },
+    });
 }
 
-async function sessionUpsert(user_id: number | string, token: string){
-    return connection.query(`INSERT INTO sessions(user_id, token) VALUES ($1, $2)
-    ON CONFLICT(token) DO UPDATE SET token=$2, "created_at"=NOW() WHERE sessions.user_id =$1;`,[user_id, token]);
+async function sessionUpsert(user_id: number, token: string) {
+    return prisma.sessions.create({
+        data: {
+            user_id,
+            token,
+        },
+    });
 }
 
-async function getUserSessionToken(user_id: number | string){
-    return connection.query("SELECT token FROM sessions WHERE \"user_id\" = $1 ORDER BY id DESC;" , [user_id]);
+async function getUserSessionToken(user_id: number) {
+    return prisma.sessions.findFirst({
+        where: { user_id },
+        orderBy: { id: "desc" },
+    });
 }
 
-export {
-    getUserByEmail,
-    createUser,
-    sessionUpsert,
-    getUserSessionToken
-};
+export { getUserByEmail, createUser, sessionUpsert, getUserSessionToken };

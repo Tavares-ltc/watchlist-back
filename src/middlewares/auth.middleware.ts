@@ -20,10 +20,10 @@ async function checkAuthorization(
 
   try {
       const decoded = jwt.verify(token, process.env.TOKEN_SECRET) as JwtPayload;
-      const user_id = decoded.user_id;
+      const user_id = Number(decoded.user_id);
     
-      const userToken = (await getUserSessionToken(user_id)).rows[0];
-      if (token !== userToken.token) {
+      const userToken = (await getUserSessionToken(user_id));
+      if (!userToken || token !== userToken.token) {
           return unauthorizedRequestResponse(res);
       }
 

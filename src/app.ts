@@ -1,23 +1,27 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import tmdb_routes from "./routes/tmdb.routes.js";
 import user_routes from "./routes/auth.routes.js";
 import watchlist_routes from "./routes/watchlist.routes.js";
 import rating_routes from "./routes/ratings.routes.js";
+import { connectDb, disconnectDB } from "./config/database.js";
 
 const app = express();
-app.use(express.json());
-app.use(cors());
-dotenv.config();
+app
+    .use(cors())
+    .use(express.json())
+    .use(tmdb_routes)
+    .use(user_routes)
+    .use(watchlist_routes)
+    .use(rating_routes);
 
-const PORT = process.env.PORT;
+export async function init() {
+    connectDb();
+    return Promise.resolve(app);
+}
 
-app.use(tmdb_routes);
-app.use(user_routes);
-app.use(watchlist_routes);
-app.use(rating_routes);
+export async function close(): Promise<void> {
+    await disconnectDB();
+}
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+export default app;

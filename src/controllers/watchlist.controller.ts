@@ -31,11 +31,11 @@ async function listMoviesWatchlist(req: Request, res: Response) {
     }
 
     try {
-        const movies = await getUserWatchlist(user_id, page);
+        const movies = await getUserWatchlist(Number(user_id), page);
         if (!movies) {
             return notFoundRequestResponse(res);
         }
-        okResponse(res, movies.rows);
+        okResponse(res, movies);
     } catch (error) {
         serverErrorResponse(res, error.message);
     }
@@ -43,25 +43,25 @@ async function listMoviesWatchlist(req: Request, res: Response) {
 
 async function addMovieToList(req: Request, res: Response) {
     const errors: string[] | false = validateDataBySchema(req.body, movie_schema);
-    if(errors) return unauthorizedRequestResponse(res, errors);
-  
+    if (errors) return unauthorizedRequestResponse(res, errors);
+
     const { user_id } = res.locals;
-    const noPosterImage = "https://www.sda.pf/wp-content/themes/dt-the7/images/noimage.jpg";
- 
+    const noPosterImage =
+    "https://www.sda.pf/wp-content/themes/dt-the7/images/noimage.jpg";
 
     const TMDB_movie_id: string = req.body.movie_id;
 
     try {
-        const movie = (await isOnWatchlist(TMDB_movie_id, user_id)).rows;
-        if (movie.length > 0) return okResponse(res, "Already on the list");
+        const movie = await isOnWatchlist(Number(TMDB_movie_id), user_id);
+        if (movie) return okResponse(res, "Already on the list");
         const movieData = await getMovieData(TMDB_movie_id);
         if (!movieData) return notFoundRequestResponse(res);
 
         const { title, overview, release_date } = movieData.data;
-        let {poster_path} = movieData.data;
-        if(!poster_path) poster_path = noPosterImage;
+        let { poster_path } = movieData.data;
+        if (!poster_path) poster_path = noPosterImage;
         await insertMovieOnWatchlist(
-            TMDB_movie_id,
+            Number(TMDB_movie_id),
             title,
             poster_path,
             overview,
@@ -78,28 +78,33 @@ async function removeFromList(req: Request, res: Response) {
     const { user_id } = res.locals;
     const TMDB_movie_id = req.params.movie_id;
     try {
-        const movie = await isOnWatchlist(TMDB_movie_id, user_id);
+        const movie = await isOnWatchlist(Number(TMDB_movie_id), user_id);
         if (!movie) return notFoundRequestResponse(res);
-        deleteRatingByWathlistId(movie.rows[0].id);
-        removeMovieFromList(TMDB_movie_id, user_id);
+        deleteRatingByWathlistId(movie.id);
+        removeMovieFromList(Number(TMDB_movie_id), user_id);
         okResponse(res);
     } catch (error) {
         serverErrorResponse(res, error.message);
     }
 }
 
-async function listFavoritesMovies(req: Request, res: Response){
-    const {user_id} = req.params;
-    if(!user_id){
+async function listFavoritesMovies(req: Request, res: Response) {
+    const { user_id } = req.params;
+    if (!user_id) {
         return unprocessableRequestResponse(res);
     }
     try {
-        const favoriteMovies = (await get5starsMovies(user_id)).rows;
-        if(!favoriteMovies) okResponse(res, []);
+        const favoriteMovies = (await get5starsMovies(Number(user_id))).rows;
+        if (!favoriteMovies) okResponse(res, []);
         okResponse(res, favoriteMovies);
     } catch (error) {
         notFoundRequestResponse(res);
     }
 }
 
-export { listMoviesWatchlist, addMovieToList, removeFromList, listFavoritesMovies };
+export {
+    listMoviesWatchlist,
+    addMovieToList,
+    removeFromList,
+    listFavoritesMovies,
+};

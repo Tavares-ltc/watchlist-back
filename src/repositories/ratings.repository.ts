@@ -1,60 +1,78 @@
-import connection from "../database/postgres.js";
+import { QueryResult } from "pg";
+import { prisma } from "../config/database.js";
 
 async function insertRating(
-    watchlist_id: number | string,
-    stars: number | string,
+    watchlist_id: number,
+    stars: number,
     comment: string
 ) {
-    return connection.query(
-        "INSERT INTO rating (watchlist_id, stars, comment) VALUES ($1, $2, $3);",
-        [watchlist_id, stars, comment]
-    );
+    return prisma.rating.create({
+        data: {
+            watchlist_id,
+            stars,
+            comment,
+        },
+    });
 }
 
-async function deleteRatingById(rating_id: number | string) {
-    return connection.query("DELETE FROM rating WHERE id = $1;", [rating_id]);
-}
-async function deleteRatingByWathlistId(watchlist_id: number | string) {
-    return connection.query("DELETE FROM rating WHERE watchlist_id = $1;", [
-        watchlist_id,
-    ]);
+async function deleteRatingById(rating_id: number) {
+    return prisma.rating.delete({ where: { id: rating_id } });
 }
 
-async function updateRating(
-    stars: number | string,
-    rating_id: number | string
-) {
-    return connection.query("UPDATE rating SET stars = $1 WHERE id  = $2;", [
-        stars,
-        rating_id,
-    ]);
-}
-async function updateComment(comment: string, rating_id: number | string) {
-    return connection.query("UPDATE rating SET comment = $1 WHERE id  = $2;", [
-        comment,
-        rating_id,
-    ]);
+async function deleteRatingByWathlistId(watchlist_id: number) {
+    return prisma.rating.delete({
+        where: { id: watchlist_id },
+    });
 }
 
-async function getRatingById(rating_id: number | string) {
-    return connection.query(
-        "SELECT rating.*, watchlist.user_id FROM rating JOIN watchlist ON watchlist.id = rating.watchlist_id WHERE rating.id = $1;",
-        [rating_id]
-    );
+async function updateRating(stars: number, rating_id: number) {
+    return prisma.rating.update({
+        where: { id: rating_id },
+        data: {
+            stars,
+        },
+    });
 }
 
-async function getRatingByWatchlistId(watchlist_id: number | string) {
-    return connection.query(
-        "SELECT rating.*, watchlist.user_id FROM rating JOIN watchlist ON watchlist.id = rating.watchlist_id WHERE watchlist_id = $1;",
-        [watchlist_id]
-    );
+async function updateComment(comment: string, rating_id: number) {
+    return prisma.rating.update({
+        where: { id: rating_id },
+        data: {
+            comment,
+        },
+    });
 }
 
-async function getUserRatingsStatistics(user_id: number | string) {
-    return connection.query(
-        "SELECT COUNT(rating.id), stars FROM rating JOIN watchlist ON watchlist_id = watchlist.id WHERE user_id = $1 GROUP BY stars;",
-        [user_id]
-    );
+async function getRatingById(rating_id: number) {
+    return prisma.rating.findFirst({
+        where: { id: rating_id },
+        include: {
+            watchlist: {
+                select: {
+                    user_id: true,
+                },
+            },
+        },
+    });
+}
+
+async function getRatingByWatchlistId(watchlist_id: number) {
+    return prisma.rating.findFirst({
+        where: { id: watchlist_id },
+        select: {
+            watchlist: {
+                select: {
+                    user_id: true,
+                },
+            },
+        },
+    });
+}
+
+async function getUserRatingsStatistics(
+    user_id: number
+): Promise<QueryResult<any>> {
+    return prisma.$queryRaw`SELECT COUNT(rating.id), stars FROM rating JOIN watchlist ON watchlist_id = watchlist.id WHERE user_id = ${user_id} GROUP BY stars;`;
 }
 
 export {
@@ -65,5 +83,5 @@ export {
     updateComment,
     getRatingById,
     getRatingByWatchlistId,
-    getUserRatingsStatistics
+    getUserRatingsStatistics,
 };

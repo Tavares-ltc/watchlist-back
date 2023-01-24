@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model rating {
+  id                        Int       @id @default(autoincrement())
+  stars                     Int
+  comment                   String    @default("")
+  watchlist_id              Int       @unique
+  created_at                DateTime  @default(now()) @db.Date
+  stars_rating_starsTostars stars     @relation("rating_starsTostars", fields: [stars], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  watchlist                 watchlist @relation(fields: [watchlist_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model sessions {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @default(autoincrement())
+  token      String   @unique
+  created_at DateTime @default(now()) @db.Date
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model stars {
+  id                         Int      @id @default(autoincrement())
+  stars                      Int      @unique
+  created_at                 DateTime @default(now()) @db.Date
+  rating_rating_starsTostars rating[] @relation("rating_starsTostars")
+}
+
+model users {
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(50)
+  email      String      @unique @db.VarChar(50)
+  image      String
+  password   String      @unique
+  created_at DateTime    @default(now()) @db.Date
+  sessions   sessions[]
+  watchlist  watchlist[]
+}
+
+model watchlist {
+  id            Int       @id @default(autoincrement())
+  TMDB_movie_id Int
+  title         String
+  poster_path   String
+  overview      String
+  user_id       Int
+  created_at    DateTime  @default(now()) @db.Date
+  release_date  DateTime? @db.Date
+  rating        rating?
+  users         users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
