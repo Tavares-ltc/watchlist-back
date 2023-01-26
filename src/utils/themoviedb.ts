@@ -22,9 +22,15 @@ async function getVideos(movie_id: number | string, language = "en-US") {
       );
 }
 
-async function getPopulerMovies(page: number, language = "en-US") {
+async function getPopularMovies(page: number, language = "en-US") {
     return axios.get(
         `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=${language}&page=${page}`
     );
 }
-export { getTMDBMovies, getMovieData, getVideos, getPopulerMovies };
+
+async function getNowPlayingMovies(page: number, language = "en-US") {
+  return axios.get(
+      `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=${language}&page=${page}`
+  );
+}
+export { getTMDBMovies, getMovieData, getVideos, getPopularMovies, getNowPlayingMovies };

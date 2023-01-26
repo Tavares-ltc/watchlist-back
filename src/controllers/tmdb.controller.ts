@@ -1,4 +1,4 @@
-import { getMovieData, getPopulerMovies, getTMDBMovies, getVideos } from "../utils/themoviedb.js";
+import { getMovieData, getNowPlayingMovies, getPopularMovies, getTMDBMovies, getVideos } from "../utils/themoviedb.js";
 import { Request, Response } from "express";
 import { okResponse } from "./controller.helper.js";
 
@@ -71,7 +71,7 @@ async function listPopularMovies(req: Request, res: Response) {
     let language = String(req.query?.language);
     if (!language) language = "en-US";
     try {
-        const movies = await getPopulerMovies(page, language)
+        const movies = await getPopularMovies(page, language)
         movies.data.results = movies.data.results.filter(data => data.poster_path !== null);
         movies.data.results.map(movie => movie.genres = genresHelper(movie.genre_ids))
         okResponse(res, movies.data); 
@@ -80,4 +80,19 @@ async function listPopularMovies(req: Request, res: Response) {
     }
 }
 
-export { listMovies, getMovieDetails, listPopularMovies };
+async function listNowPlayingMovies(req: Request, res: Response){
+    let page = Number(req.query?.page);
+    if (!page) page = 1;
+    let language = String(req.query?.language);
+    if (!language) language = "en-US";
+    try {
+        const movies = await getNowPlayingMovies(page, language)
+        movies.data.results = movies.data.results.filter(data => data.poster_path !== null);
+        movies.data.results.map(movie => movie.genres = genresHelper(movie.genre_ids))
+        okResponse(res, movies.data); 
+    } catch (error) {
+        res.send(error.message);
+    }
+}
+
+export { listMovies, getMovieDetails, listPopularMovies, listNowPlayingMovies };
