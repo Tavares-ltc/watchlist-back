@@ -39,7 +39,6 @@ return ids.map(id => genres[id])
 }
 
 async function listMovies(req: Request, res: Response) {
-
     const categories = {
         "discover": true,
         "top_rated": true,
