@@ -1,12 +1,10 @@
 import {Router} from "express";
-import { getMovieDetails, listMovies, listNowPlayingMovies, listPopularMovies, listUpcomingMovies } from "../controllers/tmdb.controller.js";
+import {listMovies,getMovieDetails, listMoviesByName} from "../controllers/tmdb.controller.js";
 
 const route = Router();
 
-route.get("/movies", listMovies)
-route.get("/movies/nowplaying", listNowPlayingMovies)
+route.get("/movies/:category", listMovies)
 route.get("/movie/:movie_id", getMovieDetails)
-route.get("/movies/popular", listPopularMovies)
-route.get("/movies/upcoming", listUpcomingMovies)
+route.get("/movies/search", listMoviesByName)
 
 export default route;

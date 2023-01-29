@@ -1,6 +1,7 @@
-import { getMovieData, getNowPlayingMovies, getPopularMovies, getTMDBMovies, getUpcomingMovies, getVideos } from "../utils/themoviedb.js";
+import { getDiscoverMovies, getMovieData, getTMDBMovies, getVideos, searchMovieByName } from "../utils/themoviedb.js";
 import { Request, Response } from "express";
-import { okResponse } from "./controller.helper.js";
+import { badRequestResponse, okResponse} from "./controller.helper.js";
+import { AxiosResponse } from "axios";
 
 function genresHelper(ids: number[]){
 const genres = {
@@ -38,12 +39,31 @@ return ids.map(id => genres[id])
 }
 
 async function listMovies(req: Request, res: Response) {
+
+    const categories = {
+        "discover": true,
+        "top_rated": true,
+        "upcoming": true,
+        "now_playing": true,
+        "popular": true
+    }
+
+  const { category } = req.params;
+  if(!categories[category]) return badRequestResponse(res)
+
   let page = Number(req.query?.page);
   if (!page) page = 1;
+
   let language = String(req.query?.language);
   if (!language) language = "en-US";
+
   try {
-    const movies = await getTMDBMovies(page, language);
+    let movies: AxiosResponse<any, any>
+    if(category === "discover") {
+        movies = await getDiscoverMovies(language, page)
+    } else {
+        movies = await getTMDBMovies(category, language, page);
+    }
    
     movies.data.results = movies.data.results.filter(data => data.poster_path !== null);
     movies.data.results.map(movie => movie.genres = genresHelper(movie.genre_ids))
@@ -65,13 +85,17 @@ async function getMovieDetails(req: Request, res: Response) {
         res.send(error.message);
     }
 }
-async function listPopularMovies(req: Request, res: Response) {
+
+async function listMoviesByName(req: Request, res: Response){
     let page = Number(req.query?.page);
-    if (!page) page = 1;
     let language = String(req.query?.language);
+    const query = String(req.query?.query)
+    if(!query) return badRequestResponse(res)
+    if (!page) page = 1;
     if (!language) language = "en-US";
+    
     try {
-        const movies = await getPopularMovies(page, language)
+        const movies = await searchMovieByName(page, language, query)
         movies.data.results = movies.data.results.filter(data => data.poster_path !== null);
         movies.data.results.map(movie => movie.genres = genresHelper(movie.genre_ids))
         okResponse(res, movies.data); 
@@ -79,35 +103,4 @@ async function listPopularMovies(req: Request, res: Response) {
         res.send(error.message);
     }
 }
-
-async function listNowPlayingMovies(req: Request, res: Response){
-    let page = Number(req.query?.page);
-    if (!page) page = 1;
-    let language = String(req.query?.language);
-    if (!language) language = "en-US";
-    try {
-        const movies = await getNowPlayingMovies(page, language)
-        movies.data.results = movies.data.results.filter(data => data.poster_path !== null);
-        movies.data.results.map(movie => movie.genres = genresHelper(movie.genre_ids))
-        okResponse(res, movies.data); 
-    } catch (error) {
-        res.send(error.message);
-    }
-}
-
-async function listUpcomingMovies(req: Request, res: Response){
-    let page = Number(req.query?.page);
-    if (!page) page = 1;
-    let language = String(req.query?.language);
-    if (!language) language = "en-US";
-    try {
-        const movies = await getUpcomingMovies(page)
-        movies.data.results = movies.data.results.filter(data => data.poster_path !== null);
-        movies.data.results.map(movie => movie.genres = genresHelper(movie.genre_ids))
-        okResponse(res, movies.data); 
-    } catch (error) {
-        res.send(error.message);
-    }
-}
-
-export { listMovies, getMovieDetails, listPopularMovies, listNowPlayingMovies, listUpcomingMovies };
+export { listMovies, getMovieDetails, listMoviesByName };
