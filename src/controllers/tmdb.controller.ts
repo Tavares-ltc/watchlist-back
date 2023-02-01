@@ -1,4 +1,4 @@
-import { getDiscoverMovies, getMovieData, getTMDBMovies, getVideos, searchMovieByName } from "../utils/themoviedb.js";
+import { getDiscoverMovies, getMovieData, getTMDBMovies, getVideos, getWatchProviders, searchMovieByName } from "../utils/themoviedb.js";
 import { Request, Response } from "express";
 import { badRequestResponse, okResponse} from "./controller.helper.js";
 import { AxiosResponse } from "axios";
@@ -77,8 +77,12 @@ async function getMovieDetails(req: Request, res: Response) {
 
     try {
         const movieDetails = await getMovieData(movie_id);
+        
         const videos = await getVideos(movie_id);
         if(videos.data) movieDetails.data.videos = videos.data
+
+        const watchProviders = await getWatchProviders(movie_id)
+        if(watchProviders.data) movieDetails.data.watchProviders = watchProviders.data
         return res.send(movieDetails.data) 
     } catch (error) {
         res.send(error.message);

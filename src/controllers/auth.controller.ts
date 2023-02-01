@@ -45,7 +45,6 @@ async function signin(req: Request, res: Response) {
     if (errors) return unauthorizedRequestResponse(res, errors);
 
     const { password, email } = req.body;
-
     try {
         const user = await getUserByEmail(email);
 
@@ -60,19 +59,10 @@ async function signin(req: Request, res: Response) {
         );
 
         sessionUpsert(user.id, token);
-        okResponse(res, { token: token });
+        okResponse(res, { name: user.name, image: user.image, token: token });
     } catch (error) {
         serverErrorResponse(res, error.message);
     }
 }
 
-async function status(req: Request, res: Response) {
-    try {
-        const teste = await prisma.sessions.findFirst();
-        return res.send(teste);
-    } catch (error) {
-        serverErrorResponse(res, error.message);
-    }
-}
-
-export { signup, signin, status };
+export { signup, signin};

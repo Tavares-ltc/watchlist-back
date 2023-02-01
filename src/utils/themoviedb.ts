@@ -35,10 +35,17 @@ async function searchMovieByName(page: number, language = "en-US", query) {
     `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=${language}&page=${page}&query=${query}`
   );
 }
+
+async function getWatchProviders(movie_id: number | string) {
+  return axios.get(
+    `https://api.themoviedb.org/3/movie/${movie_id}/watch/providers?api_key=${API_KEY}`
+  );
+}
 export {
   getTMDBMovies,
   getDiscoverMovies,
   getMovieData,
   getVideos,
-  searchMovieByName
+  searchMovieByName,
+  getWatchProviders
 };
