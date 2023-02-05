@@ -8,20 +8,20 @@ import { connectDb, disconnectDB } from "./config/database.js";
 
 const app = express();
 app
-    .use(cors())
-    .use(express.json())
-    .use(tmdb_routes)
-    .use(user_routes)
-    .use(watchlist_routes)
-    .use(rating_routes);
+  .use(cors())
+  .use(express.json())
+  .use(tmdb_routes)
+  .use(user_routes)
+  .use(watchlist_routes)
+  .use(rating_routes);
 
 export async function init() {
-    connectDb();
-    return Promise.resolve(app);
+  connectDb();
+  return Promise.resolve(app);
 }
 
 export async function close(): Promise<void> {
-    await disconnectDB();
+  await disconnectDB();
 }
 
 export default app;

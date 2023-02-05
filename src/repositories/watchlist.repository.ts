@@ -1,14 +1,11 @@
 import { prisma } from "../config/database.js";
 import { QueryResult } from "pg";
 
-async function getUserWatchlist(user_id: number, itens = 0) {
-    const page = itens * 10;
+async function getUserWatchlist(user_id: number) {
     return prisma.watchlist.findMany({
         where: {
             user_id,
         },
-        skip: page,
-        take: 10,
     });
 }
 
@@ -23,8 +20,9 @@ async function insertMovieOnWatchlist(
     title: string,
     poster_path: string,
     overview: string,
-    release_date: string | Date,
-    user_id: number
+    release_date: string,
+    user_id: number,
+    genres: string
 ) {
     return prisma.watchlist.create({
         data: {
@@ -34,6 +32,7 @@ async function insertMovieOnWatchlist(
             overview,
             release_date,
             user_id,
+            genres,
         },
     });
 }

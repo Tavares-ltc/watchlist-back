@@ -50,8 +50,8 @@ function unauthorizedRequestResponse(res: Response, text: string | string[] = ST
     return res.status(STATUS_CODE.UNAUTHORIZED).send(text);
 }
 
-function conflictResponse(res: Response, text = STATUS_TEXT.CONFLICT) {
-    return res.status(STATUS_CODE.CONFLICT).send(text);
+function conflictResponse(res: Response) {
+    return res.status(STATUS_CODE.CONFLICT);
 }
 
 function createdResponse(res: Response, text = STATUS_TEXT.CREATED) {

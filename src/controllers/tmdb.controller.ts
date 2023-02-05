@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { badRequestResponse, okResponse} from "./controller.helper.js";
 import { AxiosResponse } from "axios";
 
-function genresHelper(ids: number[]){
+export function genresHelper(ids: number[]){
 const genres = {
     28: "Action",
     12: "Adventure",

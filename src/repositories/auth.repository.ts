@@ -39,4 +39,12 @@ async function getUserSessionToken(user_id: number) {
     });
 }
 
-export { getUserByEmail, createUser, sessionUpsert, getUserSessionToken };
+async function getUserData(user_id: number) {
+    return prisma.users.findFirst({
+        where: { id: user_id },
+    });
+}
+
+
+
+export { getUserByEmail, createUser, sessionUpsert, getUserSessionToken ,getUserData };

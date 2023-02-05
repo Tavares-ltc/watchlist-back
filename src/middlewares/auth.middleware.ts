@@ -21,13 +21,12 @@ async function checkAuthorization(
   try {
       const decoded = jwt.verify(token, process.env.TOKEN_SECRET) as JwtPayload;
       const user_id = Number(decoded.user_id);
-    
       const userToken = (await getUserSessionToken(user_id));
       if (!userToken || token !== userToken.token) {
           return unauthorizedRequestResponse(res);
       }
-
       res.locals.user_id = user_id;
+
       next();
   } catch (error) {
       return unauthorizedRequestResponse(res);

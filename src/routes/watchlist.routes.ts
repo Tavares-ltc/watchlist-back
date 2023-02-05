@@ -5,8 +5,8 @@ import checkAuthorization from "../middlewares/auth.middleware.js";
 const route = Router();
 
 
-route.get("/watchlist/:user_id", listMoviesWatchlist );
-route.get("/watchlist/favorites/:user_id", listFavoritesMovies);
+route.get("/watchlist", checkAuthorization, listMoviesWatchlist );
+route.get("/watchlist/favorites", checkAuthorization, listFavoritesMovies);
 route.post("/watchlist",checkAuthorization, addMovieToList);
 route.delete("/watchlist/:movie_id",checkAuthorization, removeFromList);
 
