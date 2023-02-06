@@ -42,7 +42,6 @@ function okResponse(res: Response, text: string | QueryResultRow = STATUS_TEXT.O
 }
   
 function serverErrorResponse(res: Response, error?: string, text = STATUS_TEXT.SERVER_ERROR) {
-    console.error(error);
     return res.status(STATUS_CODE.SERVER_ERROR).send(text);
 }
 

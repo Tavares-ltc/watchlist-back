@@ -3,7 +3,7 @@ import {
     deleteRatingById,
     getRatingById,
     getUserRatingsStatistics,
-    insertRating,
+    upsertRating,
     updateComment,
     updateRating,
 } from "../repositories/ratings.repository.js";
@@ -45,7 +45,7 @@ async function rateMovie(req: Request, res: Response) {
         if (watchlistData.user_id !== user_id) {
             return unauthorizedRequestResponse(res);
         }
-        await insertRating(watchlist_id, stars, comment);
+        await upsertRating(watchlist_id, stars, comment);
         createdResponse(res);
     } catch (error) {
         serverErrorResponse(res, error.message);

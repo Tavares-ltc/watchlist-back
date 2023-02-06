@@ -6,6 +6,7 @@ async function getUserWatchlist(user_id: number) {
         where: {
             user_id,
         },
+        include: {rating: true}
     });
 }
 
