@@ -3,8 +3,8 @@ import {listMovies,getMovieDetails, listMoviesByName} from "../controllers/tmdb.
 
 const route = Router();
 
-route.get("/movies/search", listMoviesByName)
-route.get("/movies/:category", listMovies)
-route.get("/movie/:movie_id", getMovieDetails)
+route.get("/movies/search", listMoviesByName);
+route.get("/movies/:category", listMovies);
+route.get("/movie/:movie_id", getMovieDetails);
 
 export default route;
