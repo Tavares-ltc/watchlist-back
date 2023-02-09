@@ -17,6 +17,7 @@ import { signup_schema, signin_schema } from "../schemas/auth.schema.js";
 import { validateDataBySchema } from "../middlewares/validate_schema.middleware.js";
 
 async function signup(req: Request, res: Response) {
+
     const errors: string[] | false = validateDataBySchema(
         req.body,
         signup_schema
