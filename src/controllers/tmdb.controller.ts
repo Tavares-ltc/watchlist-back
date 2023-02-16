@@ -78,8 +78,11 @@ async function getMovieDetails(req: Request, res: Response) {
     const { user_id } = res.locals;
     const { movie_id } = req.params;
 
+    let language = String(req.query?.language);
+    if (!language) language = "en-US";
+
     try {
-        const movieDetails = await getMovieData(movie_id);
+        const movieDetails = await getMovieData(movie_id, language);
         
         const videos = await getVideos(movie_id);
         if(videos.data) movieDetails.data.videos = videos.data;
