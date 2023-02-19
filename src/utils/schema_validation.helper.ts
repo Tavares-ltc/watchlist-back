@@ -8,7 +8,7 @@ function validateDataBySchema(data: object, schema: Joi.ObjectSchema){
         const errors = validation.error.details.map(value => value.message);
         return errors;
     } else {
-        return false;
+        return [];
     }
 }
 
