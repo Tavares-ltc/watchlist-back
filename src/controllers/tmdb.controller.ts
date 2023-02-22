@@ -9,8 +9,8 @@ import {
 import { Request, Response } from "express";
 import { badRequestResponse, okResponse } from "../utils/response.handler.js";
 import { AxiosResponse } from "axios";
-import { isOnWatchlist } from "../repositories/watchlist.repository.js";
-import { getRatingByWatchlistId } from "../repositories/ratings.repository.js";
+import { watchlist_repository } from "../repositories/watchlist.repository.js";
+import { ratings_repository } from "../repositories/ratings.repository.js";
 
 export function genresHelper(ids: number[]) {
   const genres = {
@@ -102,10 +102,10 @@ async function getMovieDetails(req: Request, res: Response) {
     if (watchProviders.data)
       movieDetails.data.watchProviders = watchProviders.data;
 
-    const watchlistMovie = await isOnWatchlist(parseInt(movie_id), user_id);
+    const watchlistMovie = await watchlist_repository.isOnWatchlist(parseInt(movie_id), user_id);
     if (watchlistMovie) {
       movieDetails.data.watchlist_id = watchlistMovie.id;
-      const rating = await getRatingByWatchlistId(watchlistMovie.id);
+      const rating = await ratings_repository.getRatingByWatchlistId(watchlistMovie.id);
       movieDetails.data.rating = rating;
     }
     return res.send(movieDetails.data);

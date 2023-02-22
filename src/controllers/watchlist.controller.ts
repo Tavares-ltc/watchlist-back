@@ -1,10 +1,4 @@
-import {
-  get5starsMovies,
-  getUserWatchlist,
-  insertMovieOnWatchlist,
-  isOnWatchlist,
-  removeMovieFromList,
-} from "../repositories/watchlist.repository.js";
+import { watchlist_repository } from "../repositories/watchlist.repository.js";
 import { Request, Response } from "express";
 import {
   badRequestResponse,
@@ -16,11 +10,7 @@ import {
   unprocessableRequestResponse,
 } from "../utils/response.handler.js";
 import { getMovieData } from "../repositories/tmdb.repository.js";
-import {
-  deleteRatingById,
-  deleteRatingByWathlistId,
-  getRatingByWatchlistId,
-} from "../repositories/ratings.repository.js";
+import { ratings_repository } from "../repositories/ratings.repository.js";
 import { validateDataBySchema } from "../utils/schema_validation.helper.js";
 import { movie_schema } from "../schemas/watchlist.schema.js";
 import { auth_repository } from "../repositories/auth.repository.js";
@@ -39,7 +29,7 @@ async function listMoviesWatchlist(req: Request, res: Response) {
   }
 
   try {
-    const movies = await getUserWatchlist(user_id);
+    const movies = await watchlist_repository.getUserWatchlist(user_id);
     movies.forEach((movie) => (movie.genres = JSON.parse(movie.genres)));
     if (!movies) {
       return notFoundRequestResponse(res);
@@ -68,7 +58,10 @@ async function addMovieToList(req: Request, res: Response) {
   const TMDB_movie_id: string = req.body.movie_id;
 
   try {
-    const movie = await isOnWatchlist(Number(TMDB_movie_id), Number(user_id));
+    const movie = await watchlist_repository.isOnWatchlist(
+      Number(TMDB_movie_id),
+      Number(user_id)
+    );
     if (movie) return conflictResponse(res);
     const movieData = await getMovieData(TMDB_movie_id);
     if (!movieData) return notFoundRequestResponse(res);
@@ -79,7 +72,7 @@ async function addMovieToList(req: Request, res: Response) {
     const genresString = JSON.stringify(genresArray);
     let { poster_path } = movieData.data;
     if (!poster_path) poster_path = noPosterImage;
-    await insertMovieOnWatchlist(
+    await watchlist_repository.insertMovieOnWatchlist(
       Number(TMDB_movie_id),
       title,
       poster_path,
@@ -98,13 +91,18 @@ async function removeFromList(req: Request, res: Response) {
   const { user_id } = res.locals;
   const TMDB_movie_id = req.params.movie_id;
   try {
-    const movie = await isOnWatchlist(Number(TMDB_movie_id), Number(user_id));
+    const movie = await watchlist_repository.isOnWatchlist(
+      Number(TMDB_movie_id),
+      Number(user_id)
+    );
     if (!movie) return notFoundRequestResponse(res);
-    const rating = await getRatingByWatchlistId(Number(movie.id));
+    const rating = await ratings_repository.getRatingByWatchlistId(
+      Number(movie.id)
+    );
     if (rating.id) {
-      await deleteRatingById(rating.id);
+      await ratings_repository.deleteRatingById(rating.id);
     }
-    removeMovieFromList(Number(TMDB_movie_id), Number(user_id));
+    await watchlist_repository.removeMovieFromList(Number(TMDB_movie_id), Number(user_id));
     okResponse(res);
   } catch (error) {
     serverErrorResponse(res, error.message);
@@ -120,7 +118,8 @@ async function listFavoritesMovies(req: Request, res: Response) {
     return unprocessableRequestResponse(res);
   }
   try {
-    const favoriteMovies = (await get5starsMovies(user_id)).rows;
+    const favoriteMovies = (await watchlist_repository.get5starsMovies(user_id))
+      .rows;
     if (!favoriteMovies) okResponse(res, []);
     okResponse(res, favoriteMovies);
   } catch (error) {

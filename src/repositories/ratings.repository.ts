@@ -81,7 +81,7 @@ async function getUserRatingsStatistics(
     return prisma.$queryRaw`SELECT COUNT(rating.id), stars FROM rating JOIN watchlist ON watchlist_id = watchlist.id WHERE user_id = ${user_id} GROUP BY stars;`;
 }
 
-export {
+export const ratings_repository = {
     upsertRating,
     deleteRatingById,
     deleteRatingByWathlistId,
