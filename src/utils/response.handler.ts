@@ -41,7 +41,7 @@ function okResponse(res: Response, text: string | QueryResultRow = STATUS_TEXT.O
     return res.status(STATUS_CODE.OK).send(text);
 }
   
-function serverErrorResponse(res: Response, error?: string, text = STATUS_TEXT.SERVER_ERROR) {
+function serverErrorResponse(res: Response, text = STATUS_TEXT.SERVER_ERROR) {
     return res.status(STATUS_CODE.SERVER_ERROR).send(text);
 }
 
