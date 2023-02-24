@@ -15,16 +15,19 @@ async function rateMovie(rating: Rating) {
   if (rating.watchlist_id === 0) {
     throw unprocessableError("Watchlist_id cant be 0");
   }
-  if (!rating.comment) {
+
+  if (!rating?.comment) {
     rating.comment = "";
   }
 
   const watchlistData = await watchlist_repository.getWatchlistDataById(
     rating.watchlist_id
   );
+
   if (!watchlistData) {
     throw notFoundError();
   }
+
   if (watchlistData.user_id !== rating.user_id) {
     throw unauthorizedError();
   }
@@ -36,7 +39,7 @@ async function rateMovie(rating: Rating) {
 }
 
 async function removeRating(user_id: number, rating_id: string) {
-  if (!rating_id || !isNaN(Number(rating_id))) {
+  if (!rating_id || isNaN(Number(rating_id))) {
     throw unprocessableError();
   }
 

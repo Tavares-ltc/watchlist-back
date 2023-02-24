@@ -18,9 +18,10 @@ async function rateMovie(req: Request, res: Response) {
   const watchlist_id: number = req.body.watchlist_id;
 
   const rating = { user_id: Number(user_id), stars, comment, watchlist_id };
-
   try {
+
     await ratings_service.rateMovie(rating);
+
     return createdResponse(res);
   } catch (error) {
     if (error.name === "NotFoundError") {
@@ -29,6 +30,7 @@ async function rateMovie(req: Request, res: Response) {
     if (error.name === "UnauthorizedError") {
       return unauthorizedRequestResponse(res);
     }
+
     serverErrorResponse(res, error.message);
   }
 }

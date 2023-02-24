@@ -41,7 +41,7 @@ async function getWatchProviders(movie_id: number | string) {
         `https://api.themoviedb.org/3/movie/${movie_id}/watch/providers?api_key=${API_KEY}`
     );
 }
-export {
+export const tmdb_repository = {
     getTMDBMovies,
     getDiscoverMovies,
     getMovieData,

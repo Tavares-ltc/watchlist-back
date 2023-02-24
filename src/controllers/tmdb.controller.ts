@@ -1,11 +1,4 @@
-import {
-  getDiscoverMovies,
-  getMovieData,
-  getTMDBMovies,
-  getVideos,
-  getWatchProviders,
-  searchMovieByName,
-} from "../repositories/tmdb.repository.js";
+import { tmdb_repository } from "../repositories/tmdb.repository.js";
 import { Request, Response } from "express";
 import { badRequestResponse, okResponse } from "../utils/response.handler.js";
 import { AxiosResponse } from "axios";
@@ -68,9 +61,9 @@ async function listMovies(req: Request, res: Response) {
   try {
     let movies: AxiosResponse<any, any>;
     if (category === "discover") {
-      movies = await getDiscoverMovies(language, page);
+      movies = await tmdb_repository.getDiscoverMovies(language, page);
     } else {
-      movies = await getTMDBMovies(category, language, page);
+      movies = await tmdb_repository.getTMDBMovies(category, language, page);
     }
 
     movies.data.results = movies.data.results.filter(
@@ -93,12 +86,12 @@ async function getMovieDetails(req: Request, res: Response) {
   if (!language) language = "en-US";
 
   try {
-    const movieDetails = await getMovieData(movie_id, language);
+    const movieDetails = await tmdb_repository.getMovieData(movie_id, language);
 
-    const videos = await getVideos(movie_id);
+    const videos = await tmdb_repository.getVideos(movie_id);
     if (videos.data) movieDetails.data.videos = videos.data;
 
-    const watchProviders = await getWatchProviders(movie_id);
+    const watchProviders = await tmdb_repository.getWatchProviders(movie_id);
     if (watchProviders.data)
       movieDetails.data.watchProviders = watchProviders.data;
 
@@ -123,7 +116,7 @@ async function listMoviesByName(req: Request, res: Response) {
   if (!language) language = "en-US";
 
   try {
-    const movies = await searchMovieByName(page, language, query);
+    const movies = await tmdb_repository.searchMovieByName(page, language, query);
     movies.data.results = movies.data.results.filter(
       (data) => data.poster_path !== null
     );

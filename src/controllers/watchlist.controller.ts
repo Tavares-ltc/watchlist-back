@@ -6,83 +6,48 @@ import {
   notFoundRequestResponse,
   okResponse,
   serverErrorResponse,
-  unauthorizedRequestResponse,
   unprocessableRequestResponse,
 } from "../utils/response.handler.js";
-import { getMovieData } from "../repositories/tmdb.repository.js";
 import { ratings_repository } from "../repositories/ratings.repository.js";
-import { validateDataBySchema } from "../utils/schema_validation.helper.js";
-import { movie_schema } from "../schemas/watchlist.schema.js";
-import { auth_repository } from "../repositories/auth.repository.js";
-async function listMoviesWatchlist(req: Request, res: Response) {
-  let user_id = Number(req.query.user_id);
-  if (!user_id) {
-    user_id = Number(res.locals.user_id);
-  }
-  let page = 0;
-  if (req.query.page) {
-    page = Number(req.query.page);
-  }
+import { watchlist_service } from "../service/watchlist.service.js";
 
-  if (!user_id) {
-    return badRequestResponse(res);
-  }
-
+async function listWatchlistMovies(req: Request, res: Response) {
+  const chosed_user_id = Number(req.query.user_id);
+  const user_id = Number(res.locals.user_id);
   try {
-    const movies = await watchlist_repository.getUserWatchlist(user_id);
-    movies.forEach((movie) => (movie.genres = JSON.parse(movie.genres)));
-    if (!movies) {
-      return notFoundRequestResponse(res);
-    }
-    const { id, name, image, created_at } = await auth_repository.getUserData(
-      user_id
+    const moviesWithUserData = await watchlist_service.listWatchlistMovies(
+      user_id,
+      chosed_user_id
     );
-    const moviesWithUserData = {
-      movies,
-      userData: { name, image, id, created_at },
-    };
     okResponse(res, moviesWithUserData);
   } catch (error) {
+    if (error.name === "BadRequestError") {
+      return badRequestResponse(res);
+    }
+    if (error.name === "NotFoundError") {
+      return notFoundRequestResponse(res);
+    }
     serverErrorResponse(res, error.message);
   }
 }
 
 async function addMovieToList(req: Request, res: Response) {
-  const errors: string[] | false = validateDataBySchema(req.body, movie_schema);
-  if (errors) return unauthorizedRequestResponse(res, errors);
-
   const { user_id } = res.locals;
-  const noPosterImage =
-    "https://www.sda.pf/wp-content/themes/dt-the7/images/noimage.jpg";
-
   const TMDB_movie_id: string = req.body.movie_id;
 
   try {
-    const movie = await watchlist_repository.isOnWatchlist(
-      Number(TMDB_movie_id),
-      Number(user_id)
-    );
-    if (movie) return conflictResponse(res);
-    const movieData = await getMovieData(TMDB_movie_id);
-    if (!movieData) return notFoundRequestResponse(res);
-
-    const { title, overview, release_date, genres } = movieData.data;
-    const genresArray = [];
-    genres.forEach((genre) => genresArray.push(genre.name));
-    const genresString = JSON.stringify(genresArray);
-    let { poster_path } = movieData.data;
-    if (!poster_path) poster_path = noPosterImage;
-    await watchlist_repository.insertMovieOnWatchlist(
-      Number(TMDB_movie_id),
-      title,
-      poster_path,
-      overview,
-      release_date,
-      Number(user_id),
-      genresString
-    );
+    await watchlist_service.addMovieToList(user_id, TMDB_movie_id);
     okResponse(res);
   } catch (error) {
+    if (error.name === "ConflictError") {
+      return conflictResponse(res);
+    }
+    if (error.name === "NotFoundError") {
+      return notFoundRequestResponse(res);
+    }
+    if (error.name === "UnprocessableError"){
+      return unprocessableRequestResponse(res)
+    }
     serverErrorResponse(res, error.message);
   }
 }
@@ -91,18 +56,7 @@ async function removeFromList(req: Request, res: Response) {
   const { user_id } = res.locals;
   const TMDB_movie_id = req.params.movie_id;
   try {
-    const movie = await watchlist_repository.isOnWatchlist(
-      Number(TMDB_movie_id),
-      Number(user_id)
-    );
-    if (!movie) return notFoundRequestResponse(res);
-    const rating = await ratings_repository.getRatingByWatchlistId(
-      Number(movie.id)
-    );
-    if (rating.id) {
-      await ratings_repository.deleteRatingById(rating.id);
-    }
-    await watchlist_repository.removeMovieFromList(Number(TMDB_movie_id), Number(user_id));
+    await watchlist_service.removeFromList(user_id, TMDB_movie_id);
     okResponse(res);
   } catch (error) {
     serverErrorResponse(res, error.message);
@@ -110,17 +64,15 @@ async function removeFromList(req: Request, res: Response) {
 }
 
 async function listFavoritesMovies(req: Request, res: Response) {
-  let user_id = Number(req.params.user_id);
-  if (!user_id) {
-    user_id = Number(res.locals);
-  }
-  if (!user_id) {
-    return unprocessableRequestResponse(res);
-  }
+  const user_id = Number(res.locals);
+
+  const chosed_user_id = Number(req.params.user_id);
+
   try {
-    const favoriteMovies = (await watchlist_repository.get5starsMovies(user_id))
-      .rows;
-    if (!favoriteMovies) okResponse(res, []);
+    const favoriteMovies = await watchlist_service.listFavoritesMovies(
+      user_id,
+      chosed_user_id
+    );
     okResponse(res, favoriteMovies);
   } catch (error) {
     notFoundRequestResponse(res);
@@ -128,7 +80,7 @@ async function listFavoritesMovies(req: Request, res: Response) {
 }
 
 export {
-  listMoviesWatchlist,
+  listWatchlistMovies,
   addMovieToList,
   removeFromList,
   listFavoritesMovies,
